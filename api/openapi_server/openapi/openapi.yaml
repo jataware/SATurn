@@ -1,0 +1,451 @@
+openapi: 3.0.0
+info:
+  title: World Modelers Federated Search API
+  description: |
+    An Analytic API that enables the user to search for variables from a Datamart and apply analytic techniques to explore the data.
+  version: 1.0.1
+servers:
+- url: http://localhost:8080
+  description: Local server for testing federated search
+paths:
+  /clustering/{clusters}:
+    post:
+      tags:
+      - Clustering
+      summary: Cluster given data into selected number of clusters
+      description: "K-means \n"
+      operationId: clustering_post
+      parameters:
+      - name: clusters
+        in: path
+        description: Number of clusters
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: "4"
+      requestBody:
+        description: |
+          _Must_ provide `dataset_ID` and `variable_ID`.  `admin` and `time` are optional.<br>
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/timeseries_all'
+            example:
+              ids:
+                id1:
+                  dataset_id: WDI
+                  variable_id: access_to_electricity_of_population
+              country:
+              - Ethiopia
+              admin1:
+              - Oromia
+              admin2:
+              - None
+              admin3:
+              - None
+              time:
+                start: 1990-01-01
+                end: 2020-01-01
+        required: true
+      responses:
+        200:
+          description: Return a csv file
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+                x-content-type: text/csv
+      x-openapi-router-controller: openapi_server.controllers.clustering_controller
+  /visualization:
+    post:
+      tags:
+      - Visualization
+      summary: Plot selected timeseries
+      description: "Overlay multiple datasets \n"
+      operationId: visualization_post
+      requestBody:
+        description: |
+          _Must_ provide `dataset_ID` and `variable_ID`.  `admin` and `time` are optional.<br>
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/timeseries_all'
+            example:
+              ids:
+                id1:
+                  dataset_id: WDI
+                  variable_id: access_to_electricity_of_population
+                id2:
+                  dataset_id: WDI
+                  variable_id: access_to_clean_fuels_and_technologies_for_cooking_of_population
+              country:
+              - Ethiopia
+              admin1:
+              - Oromia
+              admin2:
+              - None
+              admin3:
+              - None
+              time:
+                start: 1990-01-01
+                end: 2020-01-01
+        required: true
+      responses:
+        200:
+          description: Return a csv file
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+                x-content-type: text/csv
+      x-openapi-router-controller: openapi_server.controllers.visualization_controller
+  /timeseries:
+    post:
+      tags:
+      - Time Series
+      summary: Fit and forecast time series data
+      description: |
+        Return csv with time series fit and forecast for selected variable_id with temporal and geospatial filters.
+      operationId: timeseries_post
+      requestBody:
+        description: |
+          _Must_ provide `dataset_ID` and `variable_ID`.  `admin` and `time` are optional.<br>
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/timeseries_all'
+            example:
+              ids:
+                id1:
+                  dataset_id: WDI
+                  variable_id: access_to_electricity_of_population
+              country:
+              - Ethiopia
+              admin1:
+              - Oromia
+              admin2:
+              - None
+              admin3:
+              - None
+              time:
+                start: 1990-01-01
+                end: 2020-01-01
+        required: true
+      responses:
+        200:
+          description: Return a csv file
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+                x-content-type: text/csv
+      x-openapi-router-controller: openapi_server.controllers.time_series_controller
+  /correlation:
+    post:
+      tags:
+      - Correlation
+      summary: Search over Datamarts
+      description: |
+        Return Pearson's Correlation Coefficient
+      operationId: correlation_post
+      requestBody:
+        description: words here
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/corr_all'
+            example:
+              ids:
+                id1:
+                  dataset_id: WDI
+                  variable_id: access_to_electricity_of_population
+              country:
+              - Ethiopia
+              - Kenya
+              - Eritrea
+              - South Sudan
+              - Argentina
+              - Morocco
+              admin1:
+              - Oromia
+              admin2:
+              - None
+              admin3:
+              - None
+              correlators:
+              - access_to_electricity_of_population
+              - VUAZ-8341
+              time:
+                start: 1990-01-01
+                end: 2020-01-01
+        required: true
+      responses:
+        200:
+          description: Return a csv file
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+                x-content-type: text/csv
+      x-openapi-router-controller: openapi_server.controllers.correlation_controller
+  /search:
+    post:
+      tags:
+      - Search
+      summary: Search over Datamarts
+      description: |
+        Search over Datamarts to find datasets and variables of interest.
+      operationId: search_post
+      requestBody:
+        description: "Search query definition. _Must_ provide  _at least_ one of `[admin,\
+          \ keywords]` filter.<br>  \n"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body'
+            example:
+              keywords:
+              - wfp
+              - world food prices
+              area_name:
+              - Ethiopia
+        required: true
+      responses:
+        200:
+          description: SUCCESS
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/search_result'
+      x-openapi-router-controller: openapi_server.controllers.search_controller
+  /download_variables/{dataset_id}:
+    post:
+      tags:
+      - Download
+      summary: Download variables via chosen dataset
+      description: |
+        Download variables into single file from an ISI dataset
+      operationId: download_variables_data_location_dataset_id_post
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          default: None
+        example: WDI
+      requestBody:
+        description: |
+          Enter the variable_IDs you would like to download. At least one is required.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+            example:
+            - access_to_electricity_of_population
+            - access_to_clean_fuels_and_technologies_for_cooking_of_population
+        required: true
+      responses:
+        200:
+          description: Return a csv file
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+                x-content-type: text/csv
+      x-openapi-router-controller: openapi_server.controllers.download_controller
+components:
+  schemas:
+    search_result:
+      required:
+      - dataset_id
+      - score
+      - variable_id
+      type: object
+      properties:
+        dataset_id:
+          type: string
+          description: The id of the dataset or variable within the data location
+          example: WDI
+        variable_id:
+          type: string
+          description: The id of the variable
+          example: access_to_electricity_of_population
+        name:
+          type: string
+          example: WFP dataset
+        description:
+          type: string
+          example: Food prices for Ethiopia
+        score:
+          type: number
+          description: "Ranking of the dataset or variable based on its \nproximity\
+            \ to the search of interest.\n"
+          example: 0.92
+      example:
+        score: 0.92
+        variable_id: access_to_electricity_of_population
+        dataset_id: WDI
+        name: WFP dataset
+        description: Food prices for Ethiopia
+    keyword_search:
+      type: object
+      properties:
+        keywords:
+          $ref: '#/components/schemas/keyword_search_keywords'
+      description: Text based search
+    body:
+      anyOf:
+      - $ref: '#/components/schemas/keyword_search'
+      - $ref: '#/components/schemas/geo'
+    geo:
+      required:
+      - area_name
+      type: object
+      properties:
+        area_name:
+          type: array
+          items:
+            type: string
+    keyword_search_keywords:
+      required:
+      - keywords
+      type: object
+      properties:
+        keywords:
+          type: array
+          example:
+          - wfp
+          - world food price
+          items:
+            type: string
+    country:
+      type: object
+      properties:
+        country:
+          type: array
+          example:
+          - country1
+          - country2
+          items:
+            type: string
+      description: The countries of interest
+    corr_all:
+      allOf:
+      - $ref: '#/components/schemas/ids'
+      - $ref: '#/components/schemas/corr'
+      anyOf:
+      - $ref: '#/components/schemas/country'
+      - $ref: '#/components/schemas/temporal_search'
+      - $ref: '#/components/schemas/admin1'
+      - $ref: '#/components/schemas/admin2'
+      - $ref: '#/components/schemas/admin3'
+    timeseries_all:
+      allOf:
+      - $ref: '#/components/schemas/ids'
+      anyOf:
+      - $ref: '#/components/schemas/country'
+      - $ref: '#/components/schemas/temporal_search'
+      - $ref: '#/components/schemas/admin1'
+      - $ref: '#/components/schemas/admin2'
+      - $ref: '#/components/schemas/admin3'
+    admin1:
+      type: object
+      properties:
+        admin1:
+          type: array
+          example:
+          - admin1_x
+          - admin1_y
+          items:
+            type: string
+      description: Any admin1 areas of interest
+    admin2:
+      type: object
+      properties:
+        admin2:
+          type: array
+          example:
+          - admin2_x
+          - admin2_y
+          items:
+            type: string
+      description: Any admin2 areas of interest
+    admin3:
+      type: object
+      properties:
+        admin3:
+          type: array
+          example:
+          - admin3_x
+          - admin3_y
+          items:
+            type: string
+      description: Any admin3 areas of interest
+    ids:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+      description: Dataset and variable_ids to pull data for correlation
+    id:
+      required:
+      - id1
+      type: object
+      properties:
+        id1:
+          $ref: '#/components/schemas/idx'
+        id2:
+          $ref: '#/components/schemas/idx'
+    idx:
+      required:
+      - dataset_id
+      - variable_id
+      type: object
+      properties:
+        dataset_id:
+          type: string
+          description: dataset id with variable you'd like to correlate
+          example: WDI
+        variable_id:
+          type: string
+          description: variable of interest
+          example: access_to_electricity_of_population
+    temporal_search:
+      type: object
+      properties:
+        time:
+          $ref: '#/components/schemas/temporal_search_time'
+      description: Describes columns containing temporal information.
+    temporal_search_time:
+      type: object
+      properties:
+        start:
+          type: string
+          description: Dates-of-interest are more recent than this date
+          example: 2014-01-01
+        end:
+          type: string
+          description: Dates-of-interest are older than this date
+          example: 2020-01-01
+    corr:
+      required:
+      - correlators
+      type: object
+      properties:
+        correlators:
+          type: array
+          items:
+            type: string
+      description: Any 2+ variables to correlate
