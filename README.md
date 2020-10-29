@@ -28,7 +28,9 @@ This repo contains analytic tools to explore data that is ingested from a World 
    C. Open `config.ini` and update credentials
        
    D. `pip install -r requirements.txt`
+   
+   E. `pip install swagger_ui_bundle`
        
-   E. Run `python3 -m openapi_server`
+   F. Run `python3 -m openapi_server`
        
-   F. Open browser and go to: `http://0.0.0.0:8080/ui/`
+   G. Open browser and go to: `http://0.0.0.0:8080/ui/`
