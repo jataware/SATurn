@@ -1,0 +1,4 @@
+java -jar openapi-generator-cli-3.0.0.jar generate \
+  -i corr.yaml \
+  -l python-flask \
+  -o what
