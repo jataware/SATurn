@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: World Modelers Federated Search API
+  title: SATurn Exploratory Data Analysis Tool
   description: |
     An Analytic API that enables the user to search for variables from a Datamart and apply analytic techniques to explore the data.
   version: 1.0.1
@@ -164,22 +164,13 @@ paths:
                 id1:
                   dataset_id: WDI
                   variable_id: access_to_electricity_of_population
+                id2:
+                  dataset_id: WDI
+                  variable_id: access_to_clean_fuels_and_technologies_for_cooking_of_population
               country:
               - Ethiopia
-              - Kenya
-              - Eritrea
-              - South Sudan
-              - Argentina
-              - Morocco
-              admin1:
-              - Oromia
-              admin2:
-              - None
-              admin3:
-              - None
               correlators:
-              - access_to_electricity_of_population
-              - VUAZ-8341
+              - single_country
               time:
                 start: 1990-01-01
                 end: 2020-01-01
@@ -310,8 +301,6 @@ components:
       - $ref: '#/components/schemas/keyword_search'
       - $ref: '#/components/schemas/geo'
     geo:
-      required:
-      - area_name
       type: object
       properties:
         area_name:
