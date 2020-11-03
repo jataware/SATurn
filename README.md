@@ -1,6 +1,8 @@
 # SATurn: A Structured Analytical Techniques EDA tool
 The goal of this project is to provide users with exploratory data analysis (EDA) tools that enhance factor selection for structured analytic technique (SAT) analyses.
 
+![overview_api](imgs/overview_api.png)
+
 ## Contents
 1. [Motivation](#motivation)
 2. [Structured Analytic Techniques Background](#structured-analytic-techniques-background)
