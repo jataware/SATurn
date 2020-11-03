@@ -33,16 +33,17 @@ def filter_df(df, body):
 # Fit the ts by implementing Facebook Prophet module
 def fit_ts(df):
 
-    m = Prophet(weekly_seasonality=True)
+    m = Prophet(weekly_seasonality=False)
 
     proph = m.fit(df)
-    future = m.make_future_dataframe(periods=365)
+    future = m.make_future_dataframe(periods=1)
     forecast = m.predict(future)    
     
     # ...this crashes python...
     #print('Plot saved to your working directory as "test.png"')
     #m.plot(forecast).savefig('test.png')
-
+    
+    print(proph)
     return forecast
 
 

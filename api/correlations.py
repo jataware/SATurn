@@ -103,7 +103,7 @@ def filter(body, df):
     return countries
 
 # PIVOT TABLE: turn data so countries=columns, rows=timestamp
-def pivot_it(body, df, countries):
+def pivot_country(body, df, countries):
     
     if countries != []:
         # For future? use...right
@@ -127,6 +127,31 @@ def pivot_it(body, df, countries):
         e = f"Your contries where not in the dataset for the set time frame"
         return e
 
+# PIVOT TABLE: FOR ONE COUNTRY/GEO: turn data so variables=columns, rows=timestamp 
+def pivot_vars(body, df, country):
+    
+    if country != []:
+        # For future? use...right
+        correlator = body["correlators"]
+
+        df = pd.pivot_table(df, index=['time'], columns=['variable_id'], values=['value'])
+
+        df.columns = df.columns.droplevel(0)
+        df = df.rename_axis(None, axis=1)
+
+        if isinstance(df, (pd.DatetimeIndex, pd.MultiIndex)):
+            df = df.to_frame(index=False)
+
+        # remove any pre-existing indices for ease of use
+        df = df.reset_index().drop('index', axis=1, errors='ignore')
+        df.columns = [str(c) for c in df.columns]  # update columns to strings in case they are numbers
+        
+
+        return df
+    else:
+        e = f"Your country/geo was not in the dataset for the set time frame"
+        return e
+
 # take selected variables and get the Pearson correlation coeff matrix
 def corr(body, df):
 
@@ -136,6 +161,9 @@ def corr(body, df):
     corr_data = df.corr(method='pearson')
     corr_data.index.name = str('column')
     corr_data = corr_data.reset_index()
+
+    # Round correlation to four decimals
+    corr_data = corr_data.round(4)   
 
     return corr_data
 
