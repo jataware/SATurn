@@ -31,9 +31,21 @@ def correlation_post(body):
     datamart_api_url = f'https://{isi_user}:{isi_pwd}@dsbox02.isi.edu:8888/datamart-api-wm'
     
     df_raw = fc.raw_to_df(body, datamart_api_url)
-    countries = fc.filter(body, df_raw)
-    df_pivot = fc.pivot_it(body, df_raw, countries)
-    corr_matrix = fc.corr(body, df_pivot)
+    country = fc.filter(body, df_raw)
+
+    corr_type = body["correlators"][0]
+
+    if corr_type == "single_country":
+        df_pivot = fc.pivot_vars(body, df_raw, country)
+        print(df_pivot)
+        corr_matrix = fc.corr(body, df_pivot)
+
+    if corr_type == "single_variable":
+        df_pivot = fc.pivot_country(body, df_raw, country)
+        print(df_pivot)
+        corr_matrix = fc.corr(body, df_pivot)
+
+
 
     #result = corr_matrix.to_csv()
     if type(df_pivot) == str:
