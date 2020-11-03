@@ -44,7 +44,5 @@ def timeseries_post(body):
     # call function to get fit and forecast; return "forecast" dataframe
     forecast = ft.fit_ts(df_slim)
 
-   # return forecast.to_csv(index=False)
-
-    return df_slim.to_csv(index=False)
+    return forecast.to_csv(index=False)
 
