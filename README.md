@@ -47,7 +47,7 @@ SATurn provides the tools listed below to enable EDA directly with World Modeler
 For a detailed explanation of tool implementation, see the [Usage](#usage) section below
 
 What data is available?
-Any registered dataset in the World Modeler's ISI Datamart.  Broadly, the ISI Datamart stores related data in a dataset and registers variable data within the dataset. SATurn allows the user to search for and retrieve relevant datasets and variables and employ the EDA techniques ons the selected data.
+Any registered dataset in the World Modeler's ISI Datamart.  Broadly, the ISI Datamart stores related data in a dataset and registers variable data within the dataset. SATurn allows the user to search for and retrieve relevant datasets and variables and employ the EDA techniques on the selected data.
 
 ## Installation
 Below are instructions for installing SATurn from a terminal window.
@@ -89,11 +89,13 @@ curl -X POST "http://0.0.0.0:8080/correlation" -H  "accept: text/csv" -H  "Conte
 ```
 - `correlators`: Required item. Enter either:
     - `single_country`: Correlate n variable_ids for a single country 
-    - `single_variable`: Correlate n countries for a single variable id
-- `country`: Required item. If you chose `single_variable`, enter n number of countries in a list. If you chose `single_country`, enter only one country in a list.
--   `ids`: Required item.  
-    - If you chose `single_variable`, enter only `id1` with a single `dataset_id` and single `variable_id`. 
-    - If you chose `single_country`, enter `id1` and `id2` with the associated `dataset_id` and `variable_id` you are interested in correlating.
+    - `single_variable`: Correlate n countries for a single variable_id
+- `country`: Required item. 
+    - For `single_variable`, enter n number of countries in a list. 
+    - For `single_country`, enter only one country in a list.
+- `ids`: Required item.  
+    - For `single_variable`, enter only `id1` with a single `dataset_id` and single `variable_id`. 
+    - For `single_country`, enter `id1` and `id2` with the associated `dataset_id` and `variable_id` you are interested in correlating.
 - `time`: Optional item. Temporal filter of your data.
   - `start`: Required item. Either "None" or the no earlier than date in ISO8601 format of YYYY-MM-DD.
   - `end`: Required item. Either "None" or the no later than date in ISO8601 format of YYYY-MM-DD.
