@@ -120,8 +120,47 @@ curl -X POST "http://0.0.0.0:8080/timeseries" -H  "accept: text/csv" -H  "Conten
 ## Correlation Example
 Below is an end-to-end use-case example for implementing the correlation functionality of SATurn:
 
-Use-Case: The user is interested in calculating the Pearson's Correlation Coefficient for two variables:
-	- TBD
+Use-Case: The user is interested to see if there is a relationship between food aid shipments to Ethiopia and the temperature. 
+
+1. For `Ethiopia`, keyword searches for `food` and `temperature` return two interesting variables: 
+
+```
+    "data_location": "ISI Datamart",
+    "dataset_id": "UAZ",
+    "name": " FAO: Food aid shipments, Rice Total[tonnes]",
+    "score": 0.0607927,
+    "variable_id": "VUAZ-48"
+```
+and:
+
+```
+    "data_location": "ISI Datamart",
+    "dataset_id": "UAZ",
+    "name": " Average Temperature[Celsius]",
+    "score": 0.0607927,
+    "variable_id": "VUAZ-8410"
+```
+2. To get an idea what the variable data looks like (such as time range/fidelity, units, locations...) a `curl` request to the `/download` endpoint will return a csv file.
+```
+curl -X POST "http://0.0.0.0:8080/download_variables/UAZ" -H  "accept: text/csv" -H  "Content-Type: application/json" -d "[\"VUAZ-49\"]"
+``` 
+
+3. If the data still looks interesting, the user can then use one of the EDA endpoints; here we'll correlate the two variables. When inspecting the data, VUAZ-8410 has six more years of data than VUAZ-49.  While pandas can properly handle the "NaN" values for correlations, for other EDA you want to use the `time` filter.
+
+Below we select `single_country` and enter the dataset_ids and variable_ids of the data we would like to correlate: 
+
+```
+curl -X POST "http://0.0.0.0:8080/correlation" -H  "accept: text/csv" -H  "Content-Type: application/json" -d "{\"correlators\":[\"single_country\"],\"country\":[\"Ethiopia\"],\"ids\":{\"id1\":{\"dataset_id\":\"UAZ\",\"variable_id\":\"VUAZ-8410\"},\"id2\":{\"dataset_id\":\"UAZ\",\"variable_id\":\"VUAZ-48\"}}}"
+```
+
+Below is the correlation matrix for the two variables, and one country:
+
+```
+                   VUAZ-48     VUAZ-8410
+     VUAZ-48         1.0        -0.2193
+     VUAZ-8410     -0.2193        1.0
+```
+
 
 
 ## Development
